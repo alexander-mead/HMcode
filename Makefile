@@ -1,4 +1,4 @@
-# Makefile to compile halo model
+# Makefile to compile HMcode
 
 # Standard flags
 FFLAGS = \
@@ -35,7 +35,7 @@ SRC_DIR = src
 # Build directory
 BUILD_DIR = build
 
-# Module directory
+# Library directory
 MOD_DIR = /Users/Mead/Physics/library/src
 
 # Debug build directory

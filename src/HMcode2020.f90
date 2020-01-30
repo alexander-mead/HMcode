@@ -1,22 +1,27 @@
 PROGRAM HMcode2020
 
+   USE basic_operations
    IMPLICIT NONE
+   INTEGER :: icosmo
 
-   CALL HMcode2020_example()
+   CALL read_command_argument(1, icosmo, 'Please specify cosmology')
+
+   CALL HMcode2020_example(icosmo)
+   
 
 CONTAINS
 
-   SUBROUTINE HMcode2020_example()
+   SUBROUTINE HMcode2020_example(icos)
 
       USE array_operations
       USE cosmology_functions
       USE HMx
       IMPLICIT NONE
+      INTEGER, INTENT(INOUT) :: icos
       REAL, ALLOCATABLE :: k(:), a(:)
       REAL, ALLOCATABLE :: Pk(:,:)
       TYPE(cosmology) :: cosm
 
-      INTEGER :: icosmo = -1
       REAL, PARAMETER :: kmin = 1e-3
       REAL, PARAMETER :: kmax = 1e2
       INTEGER, PARAMETER :: nk = 128
@@ -32,7 +37,7 @@ CONTAINS
       CALL fill_array(amin, amax, a, na)
       a = exp(a)
 
-      CALL assign_cosmology(icosmo, cosm, verbose)
+      CALL assign_cosmology(icos, cosm, verbose)
       CALL init_cosmology(cosm)
       CALL print_cosmology(cosm)
 
