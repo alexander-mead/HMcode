@@ -26,7 +26,7 @@ DEBUG_FLAGS = \
 FC = gfortran 
 
 # Binary
-BIN = HMcode2020
+BIN = HMcode
 BIN_DEBUG = $(BIN)_debug
 
 # Source-code directory
@@ -46,6 +46,7 @@ BIN_DIR = bin
 
 # Objects
 _OBJ = \
+	precision.o \
 	constants.o \
 	physics.o \
 	fix_polynomial.o \
@@ -60,6 +61,10 @@ _OBJ = \
 	string_operations.o \
 	calculus_table.o \
 	camb_stuff.o \
+	sorting.o \
+	statistics.o \
+	calculus.o \
+	minimization.o \
 	cosmology_functions.o \
 	hmx.o 
 
