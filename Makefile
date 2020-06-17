@@ -49,7 +49,6 @@ _OBJ = \
 	precision.o \
 	constants.o \
 	physics.o \
-	fix_polynomial.o \
 	basic_operations.o \
 	array_operations.o \
 	random_numbers.o \
