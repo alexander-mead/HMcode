@@ -33,22 +33,27 @@ Please let me know if you need any help running the code. Or if you have any que
 HMcode is now also integrated within ```CAMB``` (https://github.com/cmbant/CAMB), and this includes support for massive-neutrino models. I suggest using the version within ```CAMB``` preferentially.
 
 Alexander Mead
-(mead@phas.ubc.ca)
+(alexander.j.mead@googlemail.com)
 
-UPDATE: 2015/07/07
-One user reported crashes that occured for quite extreme cosmological models (*n_s < 0.5*, *sig8 < 0.3*, *z>5*). I have fixed this rather crudely by adding IF statements that catch problems (which manifest themsevles as extreme parameter values). The physical reason for these problems is that models with these odd cosmological parameters have *R_nl << 1 Mpc* and so have very few haloes. Some of the routines I was using previously had assumed that *R_nl* would not be so tiny.
+=== UPDATES ===
 
-UPDATE: 2016/01/23
-Updated the code a little so that it no longer calculates a range in nu and simply converts a mass range into a nu range to do the integral. The mass range is fixed from haloes of *1e2* to *1e18* Solar masses, it is difficult to imagine an application of this code where this halo mass range would not be sufficient. This further helps when considering strange cosmological models at high redshift that suffer from a lack of haloes, for these models doing a *nu* to *M* inversion occasionally reached incredibly tiny halo masses that contribute negligbly to the power spectrum on cosmological scales due to their tiny sizes.
+2020/07/03
+Complete rewrite of code. Support for HMcode2020, HMcode2016 and HMcode2015 versions. New dependence on my library: https://github.com/alexander-mead/library. The old repository has been archived and can be found at https://github.com/alexander-mead/HMcode-old.
 
-UPDATE: 2016/02/04
-Included updates from Mead et al. (2016) including parameterising the two-halo damping term in terms of f(sigma_v) and slightly recalibrated values of *alpha* and *f_damp*. Now works for w(a)CDM models, where *w(a)=w_0+(1.-a)*w_a*.
+2018/02/14
+Added support for a standard two-halo term. This can be activated by setting ```ihm=3``` in the code. Now ```ihm=1``` is the accurate calculation whereas ```ihm=2``` is the standard calculation but with a linear theory two-halo term. The variable ```imead``` has been removed. There is a new logical ```verbose```. Also added option ```ihm=0``` to do linear theory only.
 
-UPDATE: 2016/08/02
-Small update to the README and some very minor fixes in the code to facilitate direct comparisons with other halomodel power codes.
-
-UPDATE: 2018/01/18
+2018/01/18
 Added support for an input linear spectrum from ```CAMB```. This can be input via the command line as described above.
 
-UPDATE: 2018/02/14
-Added support for a standard two-halo term. This can be activated by setting ```ihm=3``` in the code. Now ```ihm=1``` is the accurate calculation whereas ```ihm=2``` is the standard calculation but with a linear theory two-halo term. The variable ```imead``` has been removed. There is a new logical ```verbose```. Also added option ```ihm=0``` to do linear theory only.
+2016/08/02
+Small update to the README and some very minor fixes in the code to facilitate direct comparisons with other halomodel power codes.
+
+2016/02/04
+Included updates from Mead et al. (2016) including parameterising the two-halo damping term in terms of f(sigma_v) and slightly recalibrated values of *alpha* and *f_damp*. Now works for w(a)CDM models, where *w(a)=w_0+(1.-a)*w_a*.
+
+2016/01/23
+Updated the code a little so that it no longer calculates a range in nu and simply converts a mass range into a nu range to do the integral. The mass range is fixed from haloes of *1e2* to *1e18* Solar masses, it is difficult to imagine an application of this code where this halo mass range would not be sufficient. This further helps when considering strange cosmological models at high redshift that suffer from a lack of haloes, for these models doing a *nu* to *M* inversion occasionally reached incredibly tiny halo masses that contribute negligbly to the power spectrum on cosmological scales due to their tiny sizes.
+
+2015/07/07
+One user reported crashes that occured for quite extreme cosmological models (*n_s < 0.5*, *sig8 < 0.3*, *z>5*). I have fixed this rather crudely by adding IF statements that catch problems (which manifest themsevles as extreme parameter values). The physical reason for these problems is that models with these odd cosmological parameters have *R_nl << 1 Mpc* and so have very few haloes. Some of the routines I was using previously had assumed that *R_nl* would not be so tiny.
