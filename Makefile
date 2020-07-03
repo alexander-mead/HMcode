@@ -1,5 +1,8 @@
 # Makefile to compile HMcode
 
+# Compiler
+FC = gfortran 
+
 # Standard flags
 FFLAGS = \
 	-fcheck=all \
@@ -22,9 +25,6 @@ DEBUG_FLAGS = \
 	-fbacktrace \
 	-Og
 
-# Compiler
-FC = gfortran 
-
 # Binary
 BIN = HMcode
 BIN_DEBUG = $(BIN)_debug
@@ -35,7 +35,7 @@ SRC_DIR = src
 # Build directory
 BUILD_DIR = build
 
-# Library directory
+# Fortran library directory (change this)
 MOD_DIR = /Users/Mead/Physics/library/src
 
 # Debug build directory
@@ -71,7 +71,7 @@ _OBJ = \
 OBJ = $(addprefix $(BUILD_DIR)/,$(_OBJ))
 DEBUG_OBJ = $(addprefix $(DEBUG_BUILD_DIR)/,$(_OBJ))
 
-# This might make directories, but I am not sure
+# This is a rule to make directories
 make_dirs = @mkdir -p $(@D)
 
 # Standard rules

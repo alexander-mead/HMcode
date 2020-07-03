@@ -46,8 +46,7 @@ CONTAINS
       !! AFTER assign_cosmology but BEFORE init_cosmology !!
       ! For example
       !cosm%Om_m = 0.4
-      !cosm%img = img_nDGP
-      !cosm%H0rc = 1.2
+      !cosm%h = 0.67
       !! ================================================ !!
 
       ! Initialise cosmological model
