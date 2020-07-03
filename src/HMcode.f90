@@ -32,7 +32,7 @@ CONTAINS
       INTEGER, PARAMETER :: na = 16
       LOGICAL, PARAMETER :: verbose = .TRUE.
       CHARACTER(len=256), PARAMETER :: outfile = 'data/power.dat'
-      INTEGER, PARAMETER :: version = HMcode2016
+      INTEGER, PARAMETER :: version = HMcode2020
 
       ! Fill arrays with desired k and a points
       CALL fill_array_log(kmin, kmax, k, nk)
@@ -55,7 +55,6 @@ CONTAINS
       CALL print_cosmology(cosm)
 
       ! Do the HMcode calculation
-      !CALL calculate_plin(k, a, Pk, nk, na, cosm)
       CALL calculate_HMcode(k, a, Pk, nk, na, cosm, version=version)
 
       ! Write the power to a file
