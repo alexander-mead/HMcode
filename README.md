@@ -1,32 +1,20 @@
 # HMcode
 
-This code is produces the non-linear matter power spectrum using the halomodel approach described in Mead et al. (2015; http://arxiv.org/abs/1505.07833). Appendix B of that paper details the methods for doing the calculation. It also includes some small updates from Mead et al. (2016; http://arxiv.org/abs/1602.02154). If you use this work, or this code, I would be very grateful if you were to cite the original paper, and the updated paper if you use results from that. The code itself can also be cited: http://ascl.net/1508.001.
+This code is produces the HMcode non-linear matter power spectrum using the augmented halo-model approach described in Mead (2020; xxxx.xxxx). It can also produce HMcode results from Mead et al. (2016; http://arxiv.org/abs/1602.02154) or from Mead et al. (2015; http://arxiv.org/abs/1505.07833). Appendix B of the 2015 paper details the numerical methods for doing the calculation. If you use this work, or this code, I would be very grateful if you were to cite the relevant papers. The code itself can also be cited: http://ascl.net/1508.001.
 
-The code should compile with any fortran compiler, and does not need to be pointed to any libraries. I use ```ifort``` and compile with ```ifort HMcode.f90``` but it also works with gfortran.
+HMcode should compile with any ```Fortran``` compiler and you can change the compiler within the ```Makefile```. HMcode requires my library (https://github.com/alexander-mead/library) to be downloaded in order to work and you will need to change the ```Makefile``` to point to where you put the library. You do not need to compile the library itself in order for HMcode to work -- HMcode just needs to know the location of the library. Once the required edits to the ```Makefile``` have been implemented simply type ```>make```. To run type ```./bin/HMcode```.
 
-When it starts, the code fills up some arrays for the wavenumber *k* and redshift *z* values for which the user wants the power spectrum. The code then calls the subroutine ```assign_cosmology```, which sets the cosmological parameters - if you wish to change these, then this needs to be done in this subroutine. The code then has two options for the linear power spectum:
+Initally the code fills up arrays for the wavenumber *k* and scale-factor *a* values for the power spectrum. The code then calls the subroutine ```assign_cosmology```, which sets the cosmological parameters - if you wish to change cosmological parameters then this needs to be done after this subroutine, but before ```init_cosmology``` has been run. The code then calls the ```calculate_HMcode``` routine to do the actual calculation and finally writes results to disk using the ```write_power_a``` routine. The data file is written to ```data/power.dat```: the first line starts with ### and then lists the scale factors. The first column is the wavenumbers and subsquent columns are values of the power spectrum at the corresponding *k* and *a* values.
 
-1 - By default, the code uses the Eistenstein & Hu (1998) approximation for the linear power spectrum (good to *~5%*, main deviations around BAO scale). The code then calls 'initialise_cosmology', which normalises the power spectrum to the correct *sigma_8* and fills up look-up tables that contain the linear growth function and *sigma(R)* for later use. If your binary is called ```HMcode``` thens simply typing ```HMcode``` on the command line defaults to this behaviour.
+There are three options for the ```version``` that you can use, either ```HMcode2020```, ```HMcode2016``` or ```HMcode2015```. In all cases the linear power is calculated from the approximate Eistenstein & Hu (1998; astro-ph/9709112) fitting function. This is accurate at only around the 5% level, with particular inaccuracy around the BAO scale. If this accuracy is not sufficient for your needs then you should use the version of HMcode that is included within ```CAMB``` (https://github.com/cmbant/CAMB) or ```CLASS``` (http://class-code.net/). 
 
-2 - The user can instead provide an input linear matter power spectrum from ```CAMB``` via the command line followed by the redshift. If your binary file is called ```HMcode``` then do ```HMcode CAMB_matterpower.dat 1``` for a matter power spectrum at *z=1*. Note that HMcode will use the cosmological parameters in the code to calculate the growth functions and other things, so these should be manually set to the same cosmological parameters that were used to generate the ```CAMB``` linear spectrum. Note that the code assumes that linear growth is scale-independent, and you will get bogus results if your model has scale-dependent linear growth. Also note that in this case HMcode will not normalise your input linear spectrum, so the *sigma_8* value set in the code will not be used, so you should provide your ```CAMB``` spectrum with the correct normalisation. Also note that the code will extrapolate your linear power as a power-law beyond the minimum and maximum values of *k* for some calculations, so you should provide a linear power spectrum for which this extrapolation is valid: ~ *0.001<k<10*, but you should check for your particular calculation!
+Using HMcode within ```CAMB``` or ```CLASS``` is also the only way to get results for massive-neutrino cosmologies, because I could not find a suitably accurate fitting function for the linear matter power spectrum in the presence of massive neutrinos. If you know of one and if this would be useful for your work then please let me know.
 
-The option ```ihm``` can be changed in the code:
+```HMcode2016``` is compatabile with DGP and f(R) modified gravity cosmologies as detailed in that paper. These can be activated by setting the ```cosm%img``` flag and then setting relevant modified-gravity parameters in the code. Look in ```cosmology_functions.f90``` to see examples of how to do this.
 
-```ihm=0``` - Linear theory only. Useful for testing and comparisons.
+In testing I was able to get 16 scale factors, with 128 *k*-points, in 0.15 seconds for a regular LCDM cosmology using gfortran on a 2018 Macbook with -O3 optimisation. 
 
-```ihm=1``` - (Default) performs the accurate calculation from Mead et al., detailed in Appendix B of http://arxiv.org/abs/1505.07833 
-
-```ihm=2``` - the code performs the standard halo model calculation (*Dv=200*, *dc=1.686*, Sheth & Tormen (1999) mass function, Bullock (2001) concentration-mass relation; although it neglects the standard bias factors in the two-halo term, because this is not important for the matter spectrum)
-
-```ihm=3``` - Similar to ```ihm=2``` but including a two-halo term with the linear halo bias terms
-
-The code then loops through redshift *z* (outer loop) and wavenumber *k* (inner loop) producing power at each redshift and wave number. The ordering of loops (*z* then *k*) is important because for each new redshift the code needs to call ```halomod_init``` to fill up redshift-dependent look-up tables for the halomodel calculation. These look-up tables contain various redshift-dependent halo properties, such as mass, virial radius, concentration etc. which are then used in the one-halo integral.
-
-Once these look-up tables have been filled the halomodel integral can then be carried out. This calculation is done by the routine 'halomod', which calls ```p_1h``` and ```p_2h``` to evaluate 1- and 2-halo terms and then uses these to compute the full power spectrum. The power spectrum at each k and z is then added to an array which is printed out to ```power.dat``` (*k*, *power(z1)*, *power(z2)*, ...) when the code finishes.
-
-In testing I was able to get 16 redshifts, with 200 *k*-points, in 0.3 seconds (using gfortran on a 2015 Macbook with -O3 optimisation). 
-
-The gnuplot script ```power.p``` that can be used to plot the output. It can be run using ```gnuplot > load 'power.p```.
+The gnuplot script ```power.p``` in the ```plot``` directory can be used to plot the output. It can be run using ```gnuplot > load 'plot/power.p```.
 
 Please let me know if you need any help running the code. Or if you have any questions whatsoever.
 
@@ -38,7 +26,7 @@ Alexander Mead
 === UPDATES ===
 
 2020/07/03
-Complete rewrite of code. Support for HMcode2020, HMcode2016 and HMcode2015 versions. New dependence on my library: https://github.com/alexander-mead/library. The old repository has been archived and can be found at https://github.com/alexander-mead/HMcode-old.
+Complete rewrite of code. Support for ```HMcode2020```, ```HMcode2016``` and ```HMcode2015``` versions. New dependence on my library: https://github.com/alexander-mead/library. The old repository has been archived and can be found at https://github.com/alexander-mead/HMcode-old. Enabled support for modified gravity models.
 
 2018/02/14
 Added support for a standard two-halo term. This can be activated by setting ```ihm=3``` in the code. Now ```ihm=1``` is the accurate calculation whereas ```ihm=2``` is the standard calculation but with a linear theory two-halo term. The variable ```imead``` has been removed. There is a new logical ```verbose```. Also added option ```ihm=0``` to do linear theory only.
