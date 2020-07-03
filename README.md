@@ -26,7 +26,7 @@ Alexander Mead
 === UPDATES ===
 
 2020/07/03
-Complete rewrite of code. Support for ```HMcode2020```, ```HMcode2016``` and ```HMcode2015``` versions. New dependence on my library: https://github.com/alexander-mead/library. The old repository has been archived and can be found at https://github.com/alexander-mead/HMcode-old. Enabled support for modified gravity models.
+Complete rewrite of code. Support for ```HMcode2020```, ```HMcode2016``` and ```HMcode2015``` versions. Enabled support for modified gravity models for the ```HMcodee2016``` version. New dependence on my library: https://github.com/alexander-mead/library. The old repository has been archived and can be found at https://github.com/alexander-mead/HMcode-old.
 
 2018/02/14
 Added support for a standard two-halo term. This can be activated by setting ```ihm=3``` in the code. Now ```ihm=1``` is the accurate calculation whereas ```ihm=2``` is the standard calculation but with a linear theory two-halo term. The variable ```imead``` has been removed. There is a new logical ```verbose```. Also added option ```ihm=0``` to do linear theory only.
