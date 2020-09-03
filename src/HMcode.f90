@@ -8,7 +8,7 @@ PROGRAM HMcode
    IMPLICIT NONE
 
    INTEGER :: icosmo
-   INTEGER, PARAMETER :: icosmo_default = 1
+   INTEGER, PARAMETER :: icosmo_default = 1 ! 1 - Boring default cosmology
 
    CALL read_command_argument(1, icosmo, 'Please specify cosmology', icosmo_default)
 
@@ -32,7 +32,12 @@ CONTAINS
       INTEGER, PARAMETER :: na = 16
       LOGICAL, PARAMETER :: verbose = .TRUE.
       CHARACTER(len=256), PARAMETER :: outfile = 'data/power.dat'
+
+      ! Different HMcode versions
+      !INTEGER, PARAMETER :: version = HMcode2015
+      !INTEGER, PARAMETER :: version = HMcode2016
       INTEGER, PARAMETER :: version = HMcode2020
+      !INTEGER, PARAMETER :: version = HMcode2020_baryons
 
       ! Fill arrays with desired k and a points
       CALL fill_array_log(kmin, kmax, k, nk)
@@ -50,6 +55,7 @@ CONTAINS
       ! For example
       !cosm%Om_m = 0.4
       !cosm%h = 0.67
+      !cosm%Theat = 10**8.0 ! Will only work if version = HMcode2020_baryons
       !! ================================================ !!
 
       ! Initialise cosmological model
