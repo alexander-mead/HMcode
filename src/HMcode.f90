@@ -38,6 +38,9 @@ CONTAINS
       CALL fill_array_log(kmin, kmax, k, nk)
       CALL fill_array(amin, amax, a, na)
 
+      ! Initial white space
+      WRITE(*, *)
+
       ! Assign cosmological model
       CALL assign_cosmology(icos, cosm, verbose)
 
