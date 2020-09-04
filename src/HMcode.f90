@@ -37,7 +37,7 @@ CONTAINS
       !INTEGER, PARAMETER :: version = HMcode2015
       !INTEGER, PARAMETER :: version = HMcode2016
       INTEGER, PARAMETER :: version = HMcode2020
-      !INTEGER, PARAMETER :: version = HMcode2020_baryons
+      !INTEGER, PARAMETER :: version = HMcode2020_feedback
 
       ! Fill arrays with desired k and a points
       CALL fill_array_log(kmin, kmax, k, nk)
@@ -55,7 +55,7 @@ CONTAINS
       ! For example
       !cosm%Om_m = 0.4
       !cosm%h = 0.67
-      !cosm%Theat = 10**8.0 ! Will only work if version = HMcode2020_baryons
+      !cosm%Theat = 10**8.0 ! Will only work if version = HMcode2020_feedback
       !! ================================================ !!
 
       ! Initialise cosmological model
