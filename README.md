@@ -1,6 +1,6 @@
 # HMcode
 
-This code produces the ```HMcode``` non-linear matter power spectrum using the augmented halo-model approach described in Mead (2020; xxxx.xxxx). It can also produce ```HMcode``` results from Mead et al. (2016; http://arxiv.org/abs/1602.02154) or from Mead et al. (2015; http://arxiv.org/abs/1505.07833). Appendix B of the 2015 paper details the numerical methods used in the calculation. If you use this work, or this code, I would be very grateful if you were to cite the relevant papers. For the enthusiast, the code itself can also be cited: http://ascl.net/1508.001.
+This code produces the ```HMcode``` non-linear matter power spectrum using the augmented halo-model approach described in Mead (2020; https://arxiv.org/abs/2009.01858). It can also produce ```HMcode``` results from Mead et al. (2016; https://arxiv.org/abs/1602.02154) or from Mead et al. (2015; https://arxiv.org/abs/1505.07833). Appendix B of the 2015 paper details the numerical methods used in the calculation. If you use this work, or this code, I would be very grateful if you were to cite the relevant papers. For the enthusiast, the code itself can also be cited: http://ascl.net/1508.001.
 
 ```HMcode``` should compile with any ```Fortran``` compiler, and you can change the compiler within the ```Makefile```. ```HMcode``` requires my library (https://github.com/alexander-mead/library) to be downloaded in order to work and you will need to change the ```Makefile``` to point to the ```src``` directory within the directory (e.g., ```MOD_DIR = /path/to/library/src``` in the ```Makefile```) where you have downloaded the library. Note well that you do **not** need to compile the library in order for ```HMcode``` to compile -- ```HMcode``` just needs to know the location of the source files within the library. Once the required edits to the ```Makefile``` have been implemented, simply type ```>make```. To run the compiled code type ```>./bin/HMcode```.
 
@@ -24,7 +24,9 @@ Alexander Mead
 === UPDATES ===
 
 2020/07/03:
-Complete rewrite of code. Support for ```HMcode2020```, ```HMcode2016``` and ```HMcode2015``` versions. Enabled support for modified gravity models for the ```HMcode2016``` version. New dependence on my library: https://github.com/alexander-mead/library. The old repository has been archived and can be found at https://github.com/alexander-mead/HMcode-old.
+Complete rewrite of code. Lots of options listed below are now suppressed. Support for ```HMcode2020```, ```HMcode2016``` and ```HMcode2015``` versions. Enabled support for modified gravity models for the ```HMcode2016``` version. New dependence on my library: https://github.com/alexander-mead/library. The old repository has been archived and can be found at https://github.com/alexander-mead/HMcode-old.
+
+----
 
 2018/02/14:
 Added support for a standard two-halo term. This can be activated by setting ```ihm=3``` in the code. Now ```ihm=1``` is the accurate calculation whereas ```ihm=2``` is the standard calculation but with a linear theory two-halo term. The variable ```imead``` has been removed. There is a new logical ```verbose```. Also added option ```ihm=0``` to do linear theory only.
