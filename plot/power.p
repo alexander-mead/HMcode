@@ -23,7 +23,7 @@ set xrange [kmin:kmax]
 
 # y axis
 set log y
-set ylabel plab
+set ylabel plab offset -1
 set format y '10^{%T}'
 set yrange [pmin:pmax]
 
