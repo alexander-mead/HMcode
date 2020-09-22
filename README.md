@@ -27,6 +27,9 @@ Alexander Mead
 
 === UPDATES ===
 
+2020/09/22:
+Added library as a ```git submodule``` so that they do not need to be cloned separately. Also support for ```HMcode2020_feedback``` was added some time between this update and that documented below.
+
 2020/07/03:
 Complete rewrite of code. Lots of options listed below are now suppressed. Support for ```HMcode2020```, ```HMcode2016``` and ```HMcode2015``` versions. Enabled support for modified gravity models for the ```HMcode2016``` version. New dependence on my library: https://github.com/alexander-mead/library. The old repository has been archived and can be found at https://github.com/alexander-mead/HMcode-old.
 
