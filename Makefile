@@ -1,114 +1,151 @@
-# Makefile to compile HMcode
+ifeq (${FC},)
+FC = gfortran
+endif
+ifeq (${FC},f77)
+FC = gfortran
+endif
 
-# Compiler
-FC = gfortran 
-
-# Standard flags
-FFLAGS = \
-	-fcheck=all \
-	-fmax-errors=4 \
-	-ffpe-trap=invalid,zero,overflow \
-	-fimplicit-none \
-	-O3 \
-	-std=gnu \
-	-ffree-line-length-none \
-	-fdefault-real-8 \
-	-fdefault-double-8 \
-	-lgfortran \
-	-lm
-
-# Extra debugging flags
-DEBUG_FLAGS = \
-	-Wall \
-	-fcheck=all \
-	-fbounds-check \
-	-fbacktrace \
-	-Og
-
-# Binary
-BIN = HMcode
-BIN_DEBUG = $(BIN)_debug
+UNAME = $(shell uname)
+ifeq (${UNAME}, Darwin)
+  LIBTOOL = libtool -static -o
+else
+  LIBTOOL = ar src
+endif
 
 # Source-code directory
-SRC_DIR = src
+LIB_SRC_DIR = library/src
+
+PYTHON_MOD = pyhmcode
+F90WRAP_SRC_DIR = f90wrap_helpers
+
 
 # Build directory
 BUILD_DIR = build
+F90WRAP_BUILD_DIR = f90wrap_pyhmcode
 
-# Fortran library directory (change this)
-MOD_DIR = library/src
+LIB_DIR = lib
+INCLUDE_DIR = include
 
 # Debug build directory
 DEBUG_BUILD_DIR = debug_build
 
-# Executable directory
-BIN_DIR = bin
+ifneq (${FC},gfortran)
+FFLAGS = -fpic -fpp -qopenmp -fp-model precise -W0 -WB -O3 -ipo -axCORE-AVX2 -fdefault-real-8 -fdefault-double-8 -ffpe-trap=invalid,zero,overflow
+DEBUGFLAGS = -fpp -qopenmp -g -check all -check noarg_temp_created -traceback -fpe0
+MODOUT = -module $(INCLUDE_DIR)
+DEBUG_MODOUT = -module $(INCLUDE_DIR)
+else
+FFLAGS =  -fPIC -cpp -fopenmp -O3 -ffree-line-length-none -std=gnu -fdefault-real-8 -fdefault-double-8
+DEBUGFLAGS = -g -O0 -fcheck=all -fbacktrace -cpp -fdec -fopenmp -ffree-line-length-none -Wall -fbounds-check -ffpe-trap=invalid,zero,overflow
+#add -fpe0 to check for floating point errors (think lowLike also throws these harmlessly)
+MODOUT = -J$(INCLUDE_DIR)
+DEBUG_MODOUT = -J$(INCLUDE_DIR)
+endif
 
 # Objects
 _OBJ = \
 	precision.o \
 	constants.o \
 	physics.o \
+	sorting.o \
 	basic_operations.o \
-	array_operations.o \
-	random_numbers.o \
-	file_info.o \
-	table_integer.o \
 	special_functions.o \
+	array_operations.o \
+	file_info.o \
+	random_numbers.o \
+	table_integer.o \
 	interpolate.o \
 	solve_equations.o \
 	string_operations.o \
 	calculus_table.o \
-	camb_stuff.o \
-	sorting.o \
 	statistics.o \
 	calculus.o \
 	minimization.o \
+	camb_stuff.o \
 	cosmology_functions.o \
-	hmx.o 
+	hmx.o \
+	
 
 # Add prefixes of build directory to objects
 OBJ = $(addprefix $(BUILD_DIR)/,$(_OBJ))
 DEBUG_OBJ = $(addprefix $(DEBUG_BUILD_DIR)/,$(_OBJ))
 
-# This is a rule to make directories
+# ?
 make_dirs = @mkdir -p $(@D)
 
+all: wrapper
+
 # Standard rules
-all: bin
-bin: $(BIN_DIR)/$(BIN)
+lib: $(LIB_DIR)/libhmx.a
+wrapper: $(LIB_DIR)/libhmx_wrapper.so
 
 # Debugging rules
-debug: FFLAGS += $(DEBUG_FLAGS)
-debug: $(BIN_DIR)/$(BIN_DEBUG)
+debug: FFLAGS += $(DEBUGFLAGS)
+debug: $(LIB_DIR)/libhmx_wrapper.so
+
+lib_debug: FFLAGS += $(DEBUGFLAGS)
+lib_debug: $(LIB_DIR)/libhmx.a
 
 # Rule to make object files
-$(BUILD_DIR)/%.o: $(MOD_DIR)/%.f90
+$(BUILD_DIR)/%.o: $(LIB_SRC_DIR)/%.f90 $(INCLUDE_DIR)
 	$(make_dirs)
-	$(FC) -c -o $@ $< -J$(BUILD_DIR) $(LDFLAGS) $(FFLAGS)
-
-# Rule to make executable
-$(BIN_DIR)/$(BIN): $(OBJ) $(SRC_DIR)/$(BIN).f90
-	@echo "\nBuilding executable.\n"
-	$(make_dirs)
-	$(FC) -o $@ $^ -J$(BUILD_DIR) $(LDFLAGS) $(FFLAGS)
+	$(FC) -c -o $@ $< $(MODOUT) $(LDFLAGS) $(FFLAGS)
 
 # Rule to make debugging objects
-$(DEBUG_BUILD_DIR)/%.o: $(MOD_DIR)/%.f90
+$(DEBUG_BUILD_DIR)/%.o: $(LIB_SRC_DIR)/%.f90
 	$(make_dirs)
-	$(FC) -c -o $@ $< -J$(DEBUG_BUILD_DIR) $(LDFLAGS) $(FFLAGS)
+	$(FC) -c -o $@ $< $(DEBUG_MODOUT) $(LDFLAGS) $(FFLAGS)
 
-# Rule to make debugging executable
-$(BIN_DIR)/$(BIN_DEBUG): $(DEBUG_OBJ) $(SRC_DIR)/$(BIN).f90
-	@echo "\nBuilding debugging executable.\n"
-	$(FC) -o $@ $^ -J$(DEBUG_BUILD_DIR) $(LDFLAGS) $(FFLAGS)
+# Create include directory for .mod files
+$(INCLUDE_DIR):
+	@mkdir -p $(INCLUDE_DIR)
+	
+# Rule to make HMx static library
+$(LIB_DIR)/libhmx.a: $(OBJ)
+	$(make_dirs)
+	$(LIBTOOL) $@ $^
+
+$(LIB_DIR)/libhmx_wrapper.so: HMx_wrapper.f90 $(LIB_DIR)/libhmx.a
+	$(make_dirs)
+	$(FC) -o $@ $^ -I$(INCLUDE_DIR) $(LDFLAGS) -shared $(FFLAGS)
+
+
+# f90wrap interface
+$(F90WRAP_BUILD_DIR):
+	@mkdir -p $(F90WRAP_BUILD_DIR)
+
+f90wrap: $(LIB_DIR)/libhmx.a $(F90WRAP_BUILD_DIR)
+	cd $(F90WRAP_BUILD_DIR) && f90wrap \
+		--only print_cosmology assign_cosmology init_cosmology init_external_linear_power_tables assign_halomod init_halo_mod calculate_HMx_old \
+		--shorten-routine-names \
+		--skip-types interpolator1D interpolator2D interpolator3D \
+		--kind-map ../$(F90WRAP_SRC_DIR)/kind_map \
+		-m $(PYTHON_MOD) --package \
+		--init-file ../$(F90WRAP_SRC_DIR)/classes.py \
+		../$(LIB_SRC_DIR)/cosmology_functions.f90 ../$(LIB_SRC_DIR)/hmx.f90
+	cd $(F90WRAP_BUILD_DIR) && f2py-f90wrap \
+		--fcompiler=$(FC) \
+		--build-dir . \
+		-c -m _$(PYTHON_MOD) \
+		--f90flags="-fdefault-real-8 -fdefault-double-8" \
+		-L../$(LIB_DIR) -lhmx -I../$(INCLUDE_DIR) f90wrap_*.f90
 
 # Clean up
 .PHONY: clean
 clean:
-	rm -f $(BIN_DIR)/$(BIN)
-	rm -f $(BIN_DIR)/$(BIN_DEBUG)
+	rm -f $(LIB_DIR)/libhmx.a
+	rm -f $(LIB_DIR)/libhmx_wrapper.so
+	test -n "$(LIB_DIR)" && rm -rf $(LIB_DIR)/libhmx_wrapper.so.dSYM/
 	rm -f $(BUILD_DIR)/*.o
-	rm -f $(BUILD_DIR)/*.mod
+	rm -f $(INCLUDE_DIR)/*.mod
+	rm -f $(SRC_DIR)/*.mod
+	rm -f *.mod
 	rm -f $(DEBUG_BUILD_DIR)/*.o
-	rm -f $(DEBUG_BUILD_DIR)/*.mod
+	rm -f $(F90WRAP_BUILD_DIR)/*.f90
+	rm -f $(F90WRAP_BUILD_DIR)/*.o
+	rm -f $(F90WRAP_BUILD_DIR)/*.so
+	rm -f $(F90WRAP_BUILD_DIR)/.f2py_f2cmap
+	test -n "$(F90WRAP_BUILD_DIR)" && rm -rf $(F90WRAP_BUILD_DIR)/*/
+	test -n "$(F90WRAP_BUILD_DIR)" && rm -rf $(F90WRAP_BUILD_DIR)/.libs/
+	test -n "$(BUILD_DIR)" && rm -rf $(BUILD_DIR)/*/
+

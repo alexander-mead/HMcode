@@ -1,0 +1,7 @@
+f90wrap_pyhmcode/
+include/
+lib/
+build/
+
+.vscode
+.DS_Store
