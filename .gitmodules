@@ -1,3 +1,4 @@
 [submodule "library"]
 	path = library
 	url = https://github.com/alexander-mead/library
+	branch = f90wrap
