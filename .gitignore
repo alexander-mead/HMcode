@@ -1,0 +1,8 @@
+# Folders generated  during compile
+bin/
+build/
+
+data/power.dat
+
+.vscode/
+.fortls
