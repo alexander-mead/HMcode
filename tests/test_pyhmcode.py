@@ -96,9 +96,7 @@ def test_power_spectrum(plot=False):
     hmod.As = halo_model["As"]
     hmod.eta0 = halo_model["eta0"]
 
-    fields = np.array([pyhmcode.hmx.field_dmonly])
-
-    pofk_hmc = pyhmcode.calculate_nonlinear_power_spectrum(c, hmod, fields, verbose=True)[0,0]
+    pofk_hmc = pyhmcode.calculate_nonlinear_power_spectrum(c, hmod, verbose=True)
 
     if plot:
         import matplotlib.pyplot as plt

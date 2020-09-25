@@ -65,6 +65,10 @@ _OBJ = \
 	cosmology_functions.o \
 	hmx.o \
 	
+WRAP_SRC = cosmology_functions.f90 hmx.f90
+F90WRAP_SRC_FROM_BUILD_DIR = $(addprefix f90wrap_,$(WRAP_SRC))
+F90WRAP_SRC = $(addprefix $(F90WRAP_BUILD_DIR)/f90wrap_,$(WRAP_SRC))
+WRAP_SRC_FROM_BUILD_DIR = $(addprefix ../$(LIB_SRC_DIR)/,$(WRAP_SRC))
 
 # Add prefixes of build directory to objects
 OBJ = $(addprefix $(BUILD_DIR)/,$(_OBJ))
@@ -87,18 +91,20 @@ lib_debug: FFLAGS += $(DEBUGFLAGS)
 lib_debug: $(LIB_DIR)/libhmx.a
 
 # Rule to make object files
-$(BUILD_DIR)/%.o: $(LIB_SRC_DIR)/%.f90 $(INCLUDE_DIR)
+$(BUILD_DIR)/%.o: $(LIB_SRC_DIR)/%.f90 | $(INCLUDE_DIR)
 	$(make_dirs)
 	$(FC) -c -o $@ $< $(MODOUT) $(LDFLAGS) $(FFLAGS)
 
 # Rule to make debugging objects
-$(DEBUG_BUILD_DIR)/%.o: $(LIB_SRC_DIR)/%.f90
-	$(make_dirs)
+$(DEBUG_BUILD_DIR)/%.o: $(LIB_SRC_DIR)/%.f90 | $(INCLUDE_DIR)
 	$(FC) -c -o $@ $< $(DEBUG_MODOUT) $(LDFLAGS) $(FFLAGS)
 
-# Create include directory for .mod files
+# Create directories
 $(INCLUDE_DIR):
-	@mkdir -p $(INCLUDE_DIR)
+	-mkdir $(INCLUDE_DIR)
+
+$(F90WRAP_BUILD_DIR):
+	-mkdir $(F90WRAP_BUILD_DIR)
 	
 # Rule to make HMx static library
 $(LIB_DIR)/libhmx.a: $(OBJ)
@@ -110,11 +116,9 @@ $(LIB_DIR)/libhmx_wrapper.so: HMx_wrapper.f90 $(LIB_DIR)/libhmx.a
 	$(FC) -o $@ $^ -I$(INCLUDE_DIR) $(LDFLAGS) -shared $(FFLAGS)
 
 
-# f90wrap interface
-$(F90WRAP_BUILD_DIR):
-	@mkdir -p $(F90WRAP_BUILD_DIR)
+f90wrap_python: $(F90WRAP_SRC)
 
-f90wrap: $(LIB_DIR)/libhmx.a $(F90WRAP_BUILD_DIR)
+$(F90WRAP_SRC): $(F90WRAP_SRC_DIR)/classes.py | $(F90WRAP_BUILD_DIR)
 	cd $(F90WRAP_BUILD_DIR) && f90wrap \
 		--only print_cosmology assign_cosmology init_cosmology init_external_linear_power_tables assign_halomod init_halo_mod calculate_HMx_old \
 		--shorten-routine-names \
@@ -122,13 +126,15 @@ f90wrap: $(LIB_DIR)/libhmx.a $(F90WRAP_BUILD_DIR)
 		--kind-map ../$(F90WRAP_SRC_DIR)/kind_map \
 		-m $(PYTHON_MOD) --package \
 		--init-file ../$(F90WRAP_SRC_DIR)/classes.py \
-		../$(LIB_SRC_DIR)/cosmology_functions.f90 ../$(LIB_SRC_DIR)/hmx.f90
+		$(WRAP_SRC_FROM_BUILD_DIR)
+
+f90wrap: lib f90wrap_python
 	cd $(F90WRAP_BUILD_DIR) && f2py-f90wrap \
 		--fcompiler=$(FC) \
 		--build-dir . \
 		-c -m _$(PYTHON_MOD) \
 		--f90flags="-fdefault-real-8 -fdefault-double-8" \
-		-L../$(LIB_DIR) -lhmx -I../$(INCLUDE_DIR) f90wrap_*.f90
+		-L../$(LIB_DIR) -lhmx -I../$(INCLUDE_DIR) $(F90WRAP_SRC_FROM_BUILD_DIR)
 
 # Clean up
 .PHONY: clean

@@ -31,7 +31,7 @@ class Cosmology(pyhmcode.cosmology_functions.cosmology):
     def set_linear_power_spectrum(self, k, z, pofk_lin):
         if pofk_lin.shape != (len(z), len(k)):
             raise ValueError(f"Shape mismatch between k, z, pofk_lin: {k.shape}, {z.shape}, {pofk_lin.shape}")
-        if z[0] >= z[-1]:
+        if z[0] > z[-1]:
             raise ValueError("Redshifts need to be in increasing order.")
 
         pk_lin = np.asfortranarray(pofk_lin[::-1].T, dtype=np.float64)
@@ -48,14 +48,59 @@ class Halomodel(pyhmcode.hmx.halomod):
         # Need to use __new__ to intercept creation of the instance and use
         # assign_halomod instead
         instance = pyhmcode.hmx.assign_halomod(mode, verbose)
+        # This looks hacky...
+        instance.__class__ = cls
+        instance.hmcode_version = mode
         return instance
 
+    def __init__(self, mode, verbose=False):
+        # Need to catch the arguments passed to __new__. Or write a metaclass...
+        pass
+
+    # Overwrite the f90wrapper due to bug https://github.com/jameskermode/f90wrap/issues/119
+    @property
+    def As(self):
+        return _pyhmcode.f90wrap_halomod__get__as(self._handle)
+    
+    @As.setter
+    def As(self, As):
+        _pyhmcode.f90wrap_halomod__set__as(self._handle, As)
 
 
-def calculate_nonlinear_power_spectrum(cosmology, halomodel, fields=np.array([field_dmonly]),
+
+
+def calculate_nonlinear_power_spectrum(cosmology, halomodel, fields=None,
                                        return_halo_terms=False, verbose=False):
+    """Compute power spectra using HMCode or HMx.
+    
+    Arguments
+    ---------
+    cosmology: pyhmcode.Cosmology
+        Cosmology object. Needs to have linear power spectrum set.
+    halomodel: pyhmcode.Halomodel
+        Halomodel object.
+    fields : numpy.array, optional
+        Array of fields. Only required if the halomodel version is HMx.
+    return_halo_terms : bool. optional
+        Return the one- and two-halo terms as well. Default False.
+    verbose : bool, optional
+        Verbosity of output.
+        
+    Returns
+    -------
+    pofk_hmc : numpy.array
+        Non-linear power spectrum. For HMCode, the shame is (nz, nk). For HMx
+        the shape is (nf, nf, nz, nk).
+    pofk_1h : numpy.array
+        If return_halo_terms == True. Same shape as pofk_hmc.
+    pofk_2h : numpy.array
+        If return_halo_terms == True. Same shape as pofk_hmc."""
+
     if not cosmology._has_linear_power_set:
         raise RuntimeError("Cosmology has no linear power spectrum set.")
+
+    if halomodel.hmcode_version in [HMcode2015, HMcode2016]:
+        fields = np.array([field_dmonly])
 
     nk = len(cosmology.k_lin)
     na = len(cosmology.a_lin)
@@ -75,10 +120,16 @@ def calculate_nonlinear_power_spectrum(cosmology, halomodel, fields=np.array([fi
                                    hmod=halomodel, cosm=cosmology, verbose=verbose)
 
     pofk_hmc = np.swapaxes(pow_hm[...,::-1], 2, 3) / (cosmology.k_lin**3/(2*np.pi**2))
+    pofk_1h = np.swapaxes(pow_1h[...,::-1], 2, 3) / (cosmology.k_lin**3/(2*np.pi**2))
+    pofk_2h = np.swapaxes(pow_2h[...,::-1], 2, 3) / (cosmology.k_lin**3/(2*np.pi**2))
+
+    if halomodel.hmcode_version in [HMcode2015, HMcode2016]:
+        # There's only one field option, so remove the extra indicies.
+        pofk_hmc = pofk_hmc[0,0]
+        pofk_1h = pofk_1h[0,0]
+        pofk_2h = pofk_2h[0,0]
 
     if return_halo_terms:
-        pofk_1h = pow_1h[:,:,:,::-1].T / cosmology.k_lin**3/(2*np.pi**2)
-        pofk_2h = pow_2h[:,:,:,::-1].T / cosmology.k_lin**3/(2*np.pi**2) 
         return pofk_hmc, pofk_1h, pofk_2h
     else:
         return pofk_hmc
