@@ -2,7 +2,9 @@
 bin/
 build/
 
+# Output file
 data/power.dat
 
+# Other crud
 .vscode/
 .fortls
