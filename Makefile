@@ -64,6 +64,7 @@ _OBJ = \
 	statistics.o \
 	calculus.o \
 	minimization.o \
+	multidark_stuff.o \
 	cosmology_functions.o \
 	hmx.o 
 
