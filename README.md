@@ -22,6 +22,8 @@ The ```gnuplot``` script ```power.p``` in the ```plot``` directory can be used t
 
 Please let me know if you need any help running the code. Or if you have any questions whatsoever.
 
+The development of HMcode between 2017 and 2020 was assisted by the Horizon 2020 research and innovation programme of the European Union under Marie Sklodowska-Curie grant agreement No. 702971.
+
 Alexander Mead
 (alexander.j.mead@googlemail.com)
 
