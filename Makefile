@@ -35,7 +35,7 @@ SRC_DIR = src
 # Build directory
 BUILD_DIR = build
 
-# Fortran library directory (change this)
+# Fortran library directory
 MOD_DIR = library/src
 
 # Debug build directory
