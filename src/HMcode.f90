@@ -9,21 +9,16 @@ PROGRAM HMcode
 
    IMPLICIT NONE
 
-   INTEGER :: icosmo
-   !INTEGER, PARAMETER :: icosmo_default = 1 ! 1 - Boring default cosmology
-
-   !CALL read_command_argument(1, icosmo, 'Please specify cosmology', icosmo_default)
-
-   CALL HMcode_example(icosmo) 
+   CALL HMcode_example() 
 
 CONTAINS
 
-   SUBROUTINE HMcode_example(icos)
+   SUBROUTINE HMcode_example()
       
-      INTEGER, INTENT(INOUT) :: icos
       REAL, ALLOCATABLE :: k(:), a(:)
       REAL, ALLOCATABLE :: Pk(:, :)
       REAL, ALLOCATABLE :: k_lin(:), a_lin(:), Pk_lin(:)
+      INTEGER :: icos
       INTEGER :: nk_lin, na_lin
       CHARACTER(len=256) :: infile
       TYPE(cosmology) :: cosm
