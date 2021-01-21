@@ -6,11 +6,11 @@ Clone the repository using
 ```
 git clone --recursive https://github.com/alexander-mead/HMcode
 ```
-the `--recursive` is important because that will also ensure that necessary libraries are cloned in to the `library/` subdirectory. `HMcode` can then be compiled using `>make`. If you get an error: 
+the `--recursive` is important because that will also ensure that necessary libraries are cloned in to the `library/` subdirectory. `HMcode` can then be compiled using `make`. If you get an error: 
 ```
 *** No rule to make target `build/precision.o', needed by `bin/HMcode'.
 ```
-this is because you did not use the `-- recursive` flag. `HMcode` should compile with any `Fortran` compiler, the default is `gfortran`, but you can change the compiler within the `Makefile` if necessary. To run the compiled code type `>./bin/HMcode`.
+this is because you did not use the `-- recursive` flag. `HMcode` should compile with any `Fortran` compiler, the default is `gfortran`, but you can change the compiler within the `Makefile` if necessary. To run the compiled code type `./bin/HMcode`.
 
 Six cosmological parameters can be specified via the command line in the order: `Om_m`; `Om_b`; `h`; `ns`; `sig8`; `w`. If these are not specified then they take on default values: `Om_m = 0.30`; `Om_b = 0.05`; `h = 0.70`; `ns = 0.96`; `sig8 = 0.80`; `w = -1.0`. The cosmological model is taken to be flat *w*CDM, with constant *w* and flatness is enforced via the dark-energy density. These restrictions can be relaxed if necessary, and more complicated dark-energy models can be investigated, but adding this would require a small bit of hacking and thought. Please contact me if you are interested in this and have any trouble implementing it yourself. 
 
