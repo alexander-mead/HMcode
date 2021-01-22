@@ -10,16 +10,16 @@ def massfunction_params(plot=False):
     h = 0.7
     omc = 0.25
     omb = 0.048
-    mnu = 0.0
+    mnu = 0.06
     w = -1.0
     wa = 0.0
     ns = 0.97
     As = 2.1e-9
 
-    n_z = 1
+    n_z = 4
 
     k_max = 20.0
-    z_lin = [0.0]#np.linspace(0, 2.0, n_z)
+    z_lin = np.linspace(0, 2.0, n_z)
     
     # Get linear power spectrum
     # Set up CAMB
@@ -58,23 +58,24 @@ def massfunction_params(plot=False):
 
     c.set_linear_power_spectrum(k_lin, z_lin, pofk_lin_camb)
 
-    pofk_hmc = {"ST_p" : [], "A" : []}
+    pofk_hmc = {"logT" : [], "A" : []}
 
     hmod = pyhmcode.Halomodel(pyhmcode.HMcode2016, verbose=False)
-    print("Varying ST p")
-    p = np.linspace(0.2, 0.4, 7)
-    for i, p_ in enumerate(p):
-        hmod.st_p = p_
-        pofk_hmc["ST_p"].append(pyhmcode.calculate_nonlinear_power_spectrum(c, hmod, verbose=False)[0])
-
-    hmod = pyhmcode.Halomodel(pyhmcode.HMcode2016, verbose=False)
-
-    # Changing As doesn't seem to do anything anymore
-    A = np.linspace(2.0, 4.0, 7)
+    
+    A = np.linspace(2.0, 3.13, 7)
     print("Varying halo A")
     for i, As in enumerate(A):
         hmod.As = As
+        #hmod.eta0 = 0.98 - 0.12*As
         pofk_hmc["A"].append(pyhmcode.calculate_nonlinear_power_spectrum(c, hmod, verbose=False)[0])
+
+    print("Varying TAGN")
+
+    hmod = pyhmcode.Halomodel(pyhmcode.HMcode2020_feedback, verbose=False)
+    logTAGN = np.linspace(7.3, 8.3, 7)
+    for i, logT in enumerate(logTAGN):
+        c.theat = 10**logT
+        pofk_hmc["logT"].append(pyhmcode.calculate_nonlinear_power_spectrum(c, hmod, verbose=True)[0])
 
     if plot:
         import matplotlib.pyplot as plt
@@ -82,9 +83,11 @@ def massfunction_params(plot=False):
 
         cmap = plt.get_cmap("magma_r")
 
-        for param_name, param in [("ST_p", p), ("A", A)]:
-            fig, ax = plt.subplots(2, 1, figsize=(5, 4))
-            fig.subplots_adjust(left=0.2, hspace=0.3, right=0.95, bottom=0.1)
+        fig, ax = plt.subplots(2, 1, figsize=(5, 4))
+        fig.subplots_adjust(left=0.2, hspace=0.3, right=0.95, bottom=0.1)
+
+        for param_name, ls, param in [("logT", "-", logTAGN), ("A", "--", A)]:
+            
 
             cb_ax = matplotlib.colorbar.make_axes(ax)
             norm = matplotlib.colors.Normalize(vmin=param[0], vmax=param[-1])
@@ -93,19 +96,19 @@ def massfunction_params(plot=False):
             cb1.set_label(param_name)
 
             _ = [ax[0].loglog(k_lin, pofk_hmc[param_name][i], 
-                            c=cmap(i/len(p))) for i in range(len(p))]
+                            c=cmap(i/len(param))) for i in range(len(param))]
             _ = ax[0].loglog(k_lin, pofk_nonlin_camb[0], ls="--", c="k")
             ax[0].set_title(f"Non-linear power spectrum, vary {param_name}")
             ax[0].set_xlabel("k [h/Mpc]")
             ax[0].set_ylabel("P(k) [Mpc^3 h^-3]")
 
             _ = [ax[1].semilogx(k_lin, pofk_hmc[param_name][i]/pofk_nonlin_camb[0] - 1, 
-                            c=cmap(i/len(p))) for i in range(len(p))]
+                                ls=ls, c=cmap(i/len(param))) for i in range(len(param))]
             ax[1].set_xlabel("k [h/Mpc]")
             ax[1].set_ylabel("HMCode/CAMB-1")
 
-            fig.dpi = 300
-            fig.savefig(f"plots/vary_{param_name}.png")
+        fig.dpi = 300
+        fig.savefig(f"plots/vary_baryon.png")
 
         plt.show()
 

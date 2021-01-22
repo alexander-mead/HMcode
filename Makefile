@@ -29,7 +29,8 @@ INCLUDE_DIR = include
 # Debug build directory
 DEBUG_BUILD_DIR = debug_build
 
-ifneq (${FC},gfortran)
+ifeq (,$(findstring gfortran,${FC}))
+# Not gfortran
 FFLAGS = -fpic -fpp -qopenmp -fp-model precise -W0 -WB -O3 -ipo -axCORE-AVX2 -fdefault-real-8 -fdefault-double-8 -ffpe-trap=invalid,zero,overflow
 DEBUGFLAGS = -fpp -qopenmp -g -check all -check noarg_temp_created -traceback -fpe0
 MODOUT = -module $(INCLUDE_DIR)
@@ -62,6 +63,7 @@ _OBJ = \
 	calculus.o \
 	minimization.o \
 	camb_stuff.o \
+	multidark_stuff.o \
 	cosmology_functions.o \
 	hmx.o \
 	
@@ -120,7 +122,7 @@ f90wrap_python: $(F90WRAP_SRC)
 
 $(F90WRAP_SRC): $(F90WRAP_SRC_DIR)/classes.py | $(F90WRAP_BUILD_DIR)
 	cd $(F90WRAP_BUILD_DIR) && f90wrap \
-		--only print_cosmology assign_cosmology init_cosmology init_external_linear_power_tables assign_halomod init_halo_mod calculate_HMx_old \
+		--only print_cosmology assign_cosmology init_cosmology init_external_linear_power_tables print_halomod assign_halomod init_halomod calculate_HMx_old \
 		--shorten-routine-names \
 		--skip-types interpolator1D interpolator2D interpolator3D \
 		--kind-map ../$(F90WRAP_SRC_DIR)/kind_map \
@@ -130,7 +132,6 @@ $(F90WRAP_SRC): $(F90WRAP_SRC_DIR)/classes.py | $(F90WRAP_BUILD_DIR)
 
 f90wrap: lib f90wrap_python
 	cd $(F90WRAP_BUILD_DIR) && f2py-f90wrap \
-		--fcompiler=$(FC) \
 		--build-dir . \
 		-c -m _$(PYTHON_MOD) \
 		--f90flags="-fdefault-real-8 -fdefault-double-8" \

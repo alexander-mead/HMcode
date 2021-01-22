@@ -99,12 +99,17 @@ def calculate_nonlinear_power_spectrum(cosmology, halomodel, fields=None,
     if not cosmology._has_linear_power_set:
         raise RuntimeError("Cosmology has no linear power spectrum set.")
 
-    if halomodel.hmcode_version in [HMcode2015, HMcode2016]:
+    if halomodel.hmcode_version in [HMcode2015, HMcode2016, HMcode2020, HMcode2020_feedback]:
         fields = np.array([field_dmonly])
+    elif fields is None:
+        raise ValueError("For the chosen halomodel, fields must be specified.")
 
     nk = len(cosmology.k_lin)
     na = len(cosmology.a_lin)
     nf = len(fields)
+
+    if cosmology.m_nu > 0 and na < 4:
+        raise ValueError("Massive neutrinos require scale-dependent growth. The associated interpolation needs at least 4 redshifts in the linear power spectrum to function.")
 
     # Output arrays
     pow_lin = np.zeros((nk, na), dtype=np.float64, order="F")
@@ -123,7 +128,7 @@ def calculate_nonlinear_power_spectrum(cosmology, halomodel, fields=None,
     pofk_1h = np.swapaxes(pow_1h[...,::-1], 2, 3) / (cosmology.k_lin**3/(2*np.pi**2))
     pofk_2h = np.swapaxes(pow_2h[...,::-1], 2, 3) / (cosmology.k_lin**3/(2*np.pi**2))
 
-    if halomodel.hmcode_version in [HMcode2015, HMcode2016]:
+    if halomodel.hmcode_version in [HMcode2015, HMcode2016, HMcode2020, HMcode2020_feedback]:
         # There's only one field option, so remove the extra indicies.
         pofk_hmc = pofk_hmc[0,0]
         pofk_1h = pofk_1h[0,0]
