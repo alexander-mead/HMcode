@@ -16,6 +16,12 @@ Six cosmological parameters can be specified via the command line in the order: 
 
 In addition, a  `CAMB`-format linear power spectrum (two columns: *k* and *P(k)* with units *[h/Mpc]* and *[(Mpc/h)^3]* respectively, with a single leading *#* comment line) can be provided as a seventh command-line argument. This linear spectrum is taken to be at *z=0* and its amplitude at higher redshifts is calculated assuming a scale-independet growth factor that is calculated via the cosmological parameters. If a linear spectrum is specified in this way then it is assumed to be normalised correctly and the value of `sig8` provided via the command line will be ignored.
 
+To give a concrete example:
+```
+./bin/HMcode 0.32 0.049 0.67 0.97 0.81 -1.0 Planck_matterpower.dat
+```
+would return the non-linear power for a  cosmology with `Om_m = 0.32`; `Om_b = 0.049`; `h = 0.67`; `ns = 0.97`; `sig8 = 0.81`; `w = -1.0` with a linear spectrum taken from `Planck_matterpower.dat`.
+
 Initally the code fills up arrays for the wavenumbers, *k*, and scale-factors, *a*, for which the power spectrum is required. The code then calls the subroutine `assign_cosmology`, which sets the cosmological parameters - if you wish to make additional changes to the cosmological parameters then this needs to be done after `assign_cosmology` has been called, but before `init_cosmology` is called. The code calls the `calculate_HMcode` routine to do the halo-model calculation and finally writes results using the `write_power_a` routine. The data file is written to `data/power.dat`: the first line starts with ### and then lists the scale factors. The first column is the wavenumbers and subsquent columns are values of the power spectrum at the corresponding *k* and *a* values. These can be checked against the included `data/power_example.dat` file to check that they agree.
 
 There are different options for the `version`: either `HMcode2020_feedback`, `HMcode2020`, `HMcode2016` or `HMcode2015`. By default the linear power is calculated from the approximate Eistenstein & Hu (1998; astro-ph/9709112) fitting function, which is accurate at only around the 5% level, with particular inaccuracy around the BAO scale. If this accuracy is not sufficient for your needs then you should use either the version of `HMcode` that is included within `CAMB` (https://github.com/cmbant/CAMB),that within `CLASS` (http://class-code.net/), or else specify a linear spectrum via the command line as described above. 
