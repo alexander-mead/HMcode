@@ -12,15 +12,33 @@ the `--recursive` is important because that will also ensure that necessary libr
 ```
 this is because you did not use the `-- recursive` flag. `HMcode` should compile with any `Fortran` compiler, the default is `gfortran`, but you can change the compiler within the `Makefile` if necessary. To run the compiled code type `./bin/HMcode`.
 
-Six cosmological parameters can be specified via the command line in the order: `Om_m`; `Om_b`; `h`; `ns`; `sig8`; `w`. If these are not specified then they take on default values: `Om_m = 0.30`; `Om_b = 0.05`; `h = 0.70`; `ns = 0.96`; `sig8 = 0.80`; `w = -1.0`. The cosmological model is taken to be flat *w*CDM, with constant *w* and flatness is enforced via the dark-energy density. These restrictions can be relaxed if necessary, and more complicated dark-energy models can be investigated, but adding this would require a small bit of hacking and thought. Please contact me if you are interested in this and have any trouble implementing it yourself. 
+Eight cosmological parameters can be specified via the command line in the order: `Om_m`; `Om_b`; `h`; `ns`; `sig8`; `m_nu`; `w`; `wa`. If these are not specified then they take on default values: `Om_m = 0.30`; `Om_b = 0.05`; `h = 0.70`; `ns = 0.96`; `sig8 = 0.80`; `m_nu = 0.`; `w = -1.`; `wa = 0.`. The cosmological model is taken to be flat w(a)CDM, with flatness is enforced via the dark-energy density. These restrictions can be relaxed if necessary, and more complicated dark-energy models can be investigated, but adding this would require a small bit of hacking and thought. Please contact me if you are interested in this and have any trouble implementing it yourself. 
 
-In addition, a  `CAMB`-format linear power spectrum (two columns: *k* and *P(k)* with units *[h/Mpc]* and *[(Mpc/h)^3]* respectively, with a single leading *#* comment line) can be provided as a seventh command-line argument. This linear spectrum is taken to be at *z=0* and its amplitude at higher redshifts is calculated assuming a scale-independet growth factor that is calculated via the cosmological parameters. If a linear spectrum is specified in this way then it is assumed to be normalised correctly and the value of `sig8` provided via the command line will be ignored.
+In addition, a linear power spectrum can be provided via ninth command-line argument. This file should contain *k* [h/Mpc] vs. *Delta^2(k)* in columns. The first row of the file should start with `#####` followed by the values of the scale factors for each column; subsequent rows should be *k*, *Delta^2(k, a1)*, *Delta^2(k, a2)*, ..., *Delta^2(k, an)*. This is exactly the same format as the file output by `HMcode`. If growth is scale dependent (e.g., if your cosmology has massive neutrinos) then you must provide the linear power for at least 4 scale factors (preferably more, 16 is a good number) for the subsequent interpolation in *a* to work. If your growth is not scale dependent then you shouold provide *Delta^2(k, a=1)* only, and the power at smaller values of the scale factor will be calculated using a scale-independent growth function that is calculated by `HMcode` internally using the cosmological parameters. If a linear spectrum is specified via the command line in this way then it is assumed to be normalised correctly, and the value of `sig8` provided via the command line will be ignored. If no linear spectrum is provided then `HMcode` uses the Eisenstein & Hu approximation for the linear spectrum. This will not work for cosmologies with massive neutrinos, and the only way to get the power in this case is to provide the linear spectrum via the command line.
 
-To give a concrete example:
+To give some concrete examples:
+
 ```
-./bin/HMcode 0.32 0.049 0.67 0.97 0.81 -1.0 input/Planck_linearpower.dat
+./bin/HMcode 0.32 0.049 0.67 0.97 0.81 0.06 -1.0 0. input/Planck_linearpower.dat 16
 ```
-would return the non-linear power for a  cosmology with `Om_m = 0.32`; `Om_b = 0.049`; `h = 0.67`; `ns = 0.97`; `sig8 = 0.81`; `w = -1.0` with a linear spectrum taken from `input/Planck_linearpower.dat`.
+would return the non-linear power for a cosmology with `Om_m = 0.32`; `Om_b = 0.049`; `h = 0.67`; `ns = 0.97`; `sig8 = 0.81`; `m_nu = 0.06`; `w = -1.0`; `wa = 0.` with a linear spectrum taken from `input/Planck_linearpower.dat` (included in the repository), which has 17 columns: the first column is *k* values followed by columns of *Delta^2(k, a)* at *16* scale factors. `sig8 = 0.81` would be ignored in this example since the normalisation is assumed to be correct in `input/Planck_linearpower.dat`.
+
+```
+./bin/HMcode
+./bin/HMcode 0.3 0.05 0.7 0.96 0.80 0.0 -1.0 0.
+```
+would both return the non-linear power for the default cosmology with `Om_m = 0.3`; `Om_b = 0.05`; `h = 0.7`; `ns = 0.96`; `sig8 = 0.80`; `m_nu = 0.`; `w = -1.`; `wa = 0.` with a linear spectrum taken from the Eisenstein & Hu approximation.
+
+```
+./bin/HMcode 0.3 0.05 0.7 0.96 0.80 0.0 -1.0 0. input/example_linearpower.dat 1
+```
+would return the non-linear power for the same cosmology as the previous example, but with the linear spectrum taken from `input/example_linearpower.dat` (included in the repository), which has a single power column. The result will be slightly different to that from the previous examaple because `input/example_linearpower.dat` comes from `CAMB` rather than from the Eisenstein & Hu approximation.
+
+```
+./bin/HMcode 0.3 0.05 0.7 0.96 0.80 0.06 -1. 0.
+```
+would fail because no linear spectrum has been provided and this cosmology has masssive neutrinos with `m_nu = 0.06`.
+
 
 Initally the code fills up arrays for the wavenumbers, *k*, and scale-factors, *a*, for which the power spectrum is required. The code then calls the subroutine `assign_cosmology`, which sets the cosmological parameters - if you wish to make additional changes to the cosmological parameters then this needs to be done after `assign_cosmology` has been called, but before `init_cosmology` is called. The code calls the `calculate_HMcode` routine to do the halo-model calculation and finally writes results using the `write_power_a` routine. The data file is written to `data/power.dat`: the first line starts with ### and then lists the scale factors. The first column is the wavenumbers and subsquent columns are values of the power spectrum at the corresponding *k* and *a* values. These can be checked against the included `data/power_example.dat` file to check that they agree.
 
