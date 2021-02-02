@@ -37,6 +37,7 @@ BUILD_DIR = build
 
 # Fortran library directory
 MOD_DIR = library/src
+#MOD_DIR = /Users/Mead/Physics/library/src
 
 # Debug build directory
 DEBUG_BUILD_DIR = debug_build

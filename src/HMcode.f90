@@ -5,7 +5,6 @@ PROGRAM HMcode
    USE array_operations
    USE cosmology_functions
    USE HMx
-   USE camb_stuff
 
    IMPLICIT NONE
 
@@ -17,9 +16,9 @@ CONTAINS
       
       REAL, ALLOCATABLE :: k(:), a(:)
       REAL, ALLOCATABLE :: Pk(:, :)
-      REAL, ALLOCATABLE :: k_lin(:), a_lin(:), Pk_lin(:)
-      INTEGER :: icos
-      INTEGER :: nk_lin, na_lin
+      REAL, ALLOCATABLE :: k_lin(:), a_lin(:), Pk_lin(:, :)
+      INTEGER :: icos, ia
+      INTEGER :: na_lin
       CHARACTER(len=256) :: infile
       TYPE(cosmology) :: cosm
 
@@ -57,20 +56,20 @@ CONTAINS
       CALL read_command_argument(3, cosm%h, '', def=cosm%h)
       CALL read_command_argument(4, cosm%ns, '', def=cosm%ns)
       CALL read_command_argument(5, cosm%sig8, '', def=cosm%sig8)
-      CALL read_command_argument(6, cosm%w, '', def=cosm%w)
+      CALL read_command_argument(6, cosm%m_nu, '', def=cosm%m_nu)
+      CALL read_command_argument(7, cosm%w, '', def=cosm%w)
+      CALL read_command_argument(8, cosm%wa, '', def=cosm%wa)
       cosm%Om_w = 1.-cosm%Om_m ! Set dark-energy density assuming flatness
-      cosm%iw = iw_wCDM        ! Set to wCDM dark energy
+      cosm%iw = iw_waCDM       ! Set to wCDM dark energy
       cosm%Om_v = 0.           ! Force vacuum energy density to zero (note that DE density is non-zero)
 
       ! Read in linear spectrum if provided
-      CALL read_command_argument(7, infile, '', def='')
+      CALL read_command_argument(9, infile, '', def='')
+      CALL read_command_argument(10, na_lin, '', def=1)
       IF (infile /= '') THEN
-         CALL read_CAMB_Pk(k_lin, Pk_lin, nk_lin, infile, verbose)
-         na_lin = 1
-         ALLOCATE(a_lin(na_lin))
-         a_lin = 1.         
-         Pk_lin = Pk_Delta(Pk_lin, k_lin)
-         CALL init_external_linear_power_tables(cosm, k_lin, a_lin, reshape(Pk_lin, [nk_lin, 1]))
+         CALL read_power_a(k_lin, a_lin, Pk_lin, infile, na_lin, verbose)
+         FORALL (ia = 1:na_lin) Pk_lin(:, ia) = Pk_Delta(Pk_lin(:, ia), k_lin)
+         CALL init_external_linear_power_tables(cosm, k_lin, a_lin, Pk_lin)
       END IF 
 
       !! ================================================ !!
