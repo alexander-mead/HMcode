@@ -5,6 +5,9 @@ build/
 # Output file
 data/power.dat
 
+# Plotting
+plot/HMcode_vs_HMx.p
+
 # Other crud
 .vscode/
 .fortls

@@ -76,9 +76,11 @@ CONTAINS
       !! You can ONLY change cosmological parameters here !!
       !! AFTER assign_cosmology but BEFORE init_cosmology !!
       ! For example
-      !cosm%Om_m = 0.4
-      !cosm%h = 0.67
-      !cosm%Theat = 10**8.0 ! Will only work if version = HMcode2020_feedback
+      !cosm%Om_m = 0.4 ! Change matter density
+      !cosm%h = 0.67 ! Change Hubble parameter
+      !cosm%Theat = 10**8.0 ! AGN feedback will only work if version = HMcode2020_feedback
+      !cosm%img = img_fR ! Set f(R) gravity
+      !cosm%fR0 = -1e-5 ! Set fR0 parameter
       !! ================================================ !!
 
       ! Initialise cosmological model
