@@ -3,6 +3,7 @@ PROGRAM HMcode
    USE constants
    USE basic_operations
    USE array_operations
+   USE file_info
    USE cosmology_functions
    USE HMx
 
@@ -27,7 +28,7 @@ CONTAINS
       REAL, PARAMETER :: kmin = 1e-3
       REAL, PARAMETER :: kmax = 1e2
       INTEGER, PARAMETER :: nk = 128
-      REAL, PARAMETER :: amin = 0.2
+      REAL, PARAMETER :: amin = 0.25
       REAL, PARAMETER :: amax = 1.0
       INTEGER, PARAMETER :: na = 16
       LOGICAL, PARAMETER :: verbose = .TRUE.
@@ -60,13 +61,13 @@ CONTAINS
       CALL read_command_argument(7, cosm%w, '', def=cosm%w)
       CALL read_command_argument(8, cosm%wa, '', def=cosm%wa)
       cosm%Om_w = 1.-cosm%Om_m ! Set dark-energy density assuming flatness
-      cosm%iw = iw_waCDM       ! Set to wCDM dark energy
+      cosm%iw = iw_waCDM       ! Set to w(a)CDM dark energy
       cosm%Om_v = 0.           ! Force vacuum energy density to zero (note that DE density is non-zero)
 
       ! Read in linear spectrum if provided
       CALL read_command_argument(9, infile, '', def='')
-      CALL read_command_argument(10, na_lin, '', def=1)
       IF (infile /= '') THEN
+         na_lin = file_columns(infile, verbose=.TRUE.)-1
          CALL read_power_a(k_lin, a_lin, Pk_lin, infile, na_lin, verbose)
          FORALL (ia = 1:na_lin) Pk_lin(:, ia) = Pk_Delta(Pk_lin(:, ia), k_lin)
          CALL init_external_linear_power_tables(cosm, k_lin, a_lin, Pk_lin)
