@@ -7,5 +7,6 @@ data/power.dat
 
 # Other crud
 plot/HMcode_vs_HMx.p
+*.ipynb
 .vscode/
 .fortls
