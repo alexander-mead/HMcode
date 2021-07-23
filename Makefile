@@ -56,7 +56,7 @@ _OBJ = \
 	table_integer.o \
 	special_functions.o \
 	interpolate.o \
-	solve_equations.o \
+	root_finding.o \
 	string_operations.o \
 	calculus_table.o \
 	camb_stuff.o \
@@ -66,6 +66,7 @@ _OBJ = \
 	minimization.o \
 	multidark_stuff.o \
 	cosmology_functions.o \
+	hod_functions.o \
 	hmx.o 
 
 # Add prefixes of build directory to objects
