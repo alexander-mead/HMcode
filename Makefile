@@ -122,7 +122,7 @@ f90wrap_python: $(F90WRAP_SRC)
 
 $(F90WRAP_SRC): $(F90WRAP_SRC_DIR)/classes.py | $(F90WRAP_BUILD_DIR)
 	cd $(F90WRAP_BUILD_DIR) && f90wrap \
-		--only print_cosmology assign_cosmology init_cosmology init_external_linear_power_tables print_halomod assign_halomod init_halomod calculate_HMx_old init_windows \
+		--only print_cosmology assign_cosmology init_cosmology init_external_linear_power_tables print_halomod assign_halomod init_halomod calculate_HMx_old init_windows add_smooth_component_to_windows \
 		--shorten-routine-names \
 		--skip-types interpolator1D interpolator2D interpolator3D \
 		--kind-map ../$(F90WRAP_SRC_DIR)/kind_map \
