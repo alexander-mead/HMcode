@@ -41,7 +41,7 @@ The development of HMcode between 2017 and 2020 was assisted by the Horizon 2020
 Alexander Mead
 (alexander.j.mead@googlemail.com)
 
-=== UPDATES ===
+### UPDATES
 
 2021/01/14:
 Support for cosmological parameters and an external linear spectrum to be provided via the command line.
@@ -54,7 +54,7 @@ Complete rewrite of code. Lots of options listed below are now suppressed. Suppo
 
 ----
 
-=== OLD STUFF ===
+### OLD STUFF
 
 2018/02/14:
 Added support for a standard two-halo term. This can be activated by setting `ihm=3` in the code. Now `ihm=1` is the accurate calculation whereas `ihm=2` is the standard calculation but with a linear theory two-halo term. The variable `imead` has been removed. There is a new logical `verbose`. Also added option `ihm=0` to do linear theory only.
