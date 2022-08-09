@@ -1,5 +1,7 @@
 # HMcode
 
+You may also be interested in pyHMcode (https://github.com/tilmantroester/pyhmcode), which provides a python wrapper around the Fortran of HMcode.
+
 This code produces the `HMcode` non-linear matter power spectrum using the augmented halo-model approach described in Mead (2021; https://arxiv.org/abs/2009.01858). It can also produce `HMcode` results from Mead et al. (2016; https://arxiv.org/abs/1602.02154) or from Mead et al. (2015; https://arxiv.org/abs/1505.07833). Appendix B of the 2015 paper details the numerical methods used in the calculation. If you use this work, or this code, I would be very grateful if you were to cite the relevant papers. For the enthusiast, the code itself can also be cited: http://ascl.net/1508.001.
 
 Clone the repository using
