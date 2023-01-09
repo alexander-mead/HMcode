@@ -1,5 +1,7 @@
 # HMcode
 
+You may also be interested in pyHMcode (https://github.com/tilmantroester/pyhmcode), which provides a python wrapper around the Fortran of HMcode.
+
 This code produces the `HMcode` non-linear matter power spectrum using the augmented halo-model approach described in Mead (2021; https://arxiv.org/abs/2009.01858). It can also produce `HMcode` results from Mead et al. (2016; https://arxiv.org/abs/1602.02154) or from Mead et al. (2015; https://arxiv.org/abs/1505.07833). Appendix B of the 2015 paper details the numerical methods used in the calculation. If you use this work, or this code, I would be very grateful if you were to cite the relevant papers. For the enthusiast, the code itself can also be cited: http://ascl.net/1508.001.
 
 Clone the repository using
@@ -41,7 +43,7 @@ The development of HMcode between 2017 and 2020 was assisted by the Horizon 2020
 Alexander Mead
 (alexander.j.mead@googlemail.com)
 
-=== UPDATES ===
+### UPDATES
 
 2021/01/14:
 Support for cosmological parameters and an external linear spectrum to be provided via the command line.
@@ -54,7 +56,7 @@ Complete rewrite of code. Lots of options listed below are now suppressed. Suppo
 
 ----
 
-=== OLD STUFF ===
+### OLD STUFF
 
 2018/02/14:
 Added support for a standard two-halo term. This can be activated by setting `ihm=3` in the code. Now `ihm=1` is the accurate calculation whereas `ihm=2` is the standard calculation but with a linear theory two-halo term. The variable `imead` has been removed. There is a new logical `verbose`. Also added option `ihm=0` to do linear theory only.
