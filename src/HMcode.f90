@@ -39,6 +39,7 @@ CONTAINS
       !INTEGER, PARAMETER :: version = HMcode2016
       INTEGER, PARAMETER :: version = HMcode2020
       !INTEGER, PARAMETER :: version = HMcode2020_feedback
+      !INTEGER, PARAMETER :: version = HMcode2020_feedback_lowkfix
 
       ! Fill arrays with desired k and a points
       CALL fill_array_log(kmin, kmax, k, nk)
