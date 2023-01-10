@@ -45,6 +45,9 @@ Alexander Mead
 
 ### UPDATES
 
+2023/01/10:
+Fix for HMcode-2020 feedback erroneously predicting effects at very large scales (k ~ 1e-4 h/Mpc).
+
 2021/01/14:
 Support for cosmological parameters and an external linear spectrum to be provided via the command line.
 
