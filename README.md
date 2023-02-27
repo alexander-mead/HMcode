@@ -1,6 +1,6 @@
 # HMcode
 
-You may also be interested in pyHMcode (https://github.com/tilmantroester/pyhmcode), which provides a python wrapper around the Fortran of HMcode.
+You may also be interested in this versions of [`pyHMcode`](https://github.com/tilmantroester/pyhmcode), which provides a python wrapper around the `Fortran` of `HMcode`. Alternatively, this version of [`pyHMcode`](https://github.com/alexander-mead/pyhmcode) is a version of `HMcode-2020` written in pure `Python`. Otherwise, [`pyhalomodel`](https://github.com/alexander-mead/pyhalomodel) provides a pure-`Python` implementation of the vanilla halo-model calculation in such a form that it can be applied to *any* tracer combination.
 
 This code produces the `HMcode` non-linear matter power spectrum using the augmented halo-model approach described in Mead (2021; https://arxiv.org/abs/2009.01858). It can also produce `HMcode` results from Mead et al. (2016; https://arxiv.org/abs/1602.02154) or from Mead et al. (2015; https://arxiv.org/abs/1505.07833). Appendix B of the 2015 paper details the numerical methods used in the calculation. If you use this work, or this code, I would be very grateful if you were to cite the relevant papers. For the enthusiast, the code itself can also be cited: http://ascl.net/1508.001.
 
@@ -28,7 +28,7 @@ Initally the code fills up arrays for the wavenumbers, *k*, and scale-factors, *
 
 There are different options for the `version`: either `HMcode2015`, `HMcode2016`, `HMcode2020`, or `HMcode2020_feedback`. By default the linear power is calculated from the approximate Eistenstein & Hu (1998; astro-ph/9709112) fitting function, which is accurate at only around the 5% level, with particular inaccuracy around the BAO scale. If this accuracy is not sufficient for your needs then you should use either the version of `HMcode` that is included within `CAMB` (https://github.com/cmbant/CAMB), that within `CLASS` (http://class-code.net/), or else specify a linear spectrum via the command line as described above. 
 
-Using HMcode within `CAMB` or `CLASS` is also the only way to get results for massive-neutrino cosmologies, because I could not find a suitably accurate fitting function for the linear matter power spectrum in the presence of massive neutrinos. If you know of one, and if this would be useful for your work, then please let me know.
+Using `HMcode` within `CAMB` or `CLASS` is also the only way to get results for massive-neutrino cosmologies, because I could not find a suitably accurate fitting function for the linear matter power spectrum in the presence of massive neutrinos. If you know of one, and if this would be useful for your work, then please let me know.
 
 `HMcode2016` is compatabile with DGP and f(R) modified gravity cosmologies as detailed in the 2016 paper. These can be activated by setting the `cosm%img` flag and then setting relevant modified-gravity parameters in the code. Look in `cosmology_functions.f90` to see examples of how to do this and please contact me if you have any trouble.
 
@@ -38,7 +38,7 @@ The `gnuplot` script `power.p` in the `plot/` directory can be used to plot the 
 
 Please let me know if you need any help running the code. Or if you have any questions whatsoever.
 
-The development of HMcode between 2017 and 2020 was assisted by the Horizon 2020 research and innovation programme of the European Union under Marie Sklodowska-Curie grant agreement No. 702971.
+The development of `HMcode` between 2017 and 2020 was assisted by the Horizon 2020 research and innovation programme of the European Union under Marie Sklodowska-Curie grant agreement No. 702971.
 
 Alexander Mead
 (alexander.j.mead@googlemail.com)
@@ -46,7 +46,7 @@ Alexander Mead
 ### UPDATES
 
 2023/01/10:
-Fix for HMcode-2020 feedback erroneously predicting effects at very large scales (k ~ 1e-4 h/Mpc).
+Fix for `HMcode-2020` feedback erroneously predicting effects at very large scales (k ~ 1e-4 h/Mpc).
 
 2021/01/14:
 Support for cosmological parameters and an external linear spectrum to be provided via the command line.
