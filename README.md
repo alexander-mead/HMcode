@@ -1,5 +1,7 @@
 # HMcode
 
+![image](https://user-images.githubusercontent.com/9140961/228377292-de68253b-c06c-40cb-a476-90e480c49cd0.png)
+
 You may also be interested in this version of [`pyHMcode`](https://github.com/tilmantroester/pyhmcode), which provides a python wrapper around the `Fortran` of `HMcode`. Alternatively, the repository [`hmcode`](https://github.com/alexander-mead/HMcode-python) contains a version of `HMcode-2020` written in pure `Python`. Otherwise, [`pyhalomodel`](https://github.com/alexander-mead/pyhalomodel) provides a pure-`Python` implementation of the vanilla halo-model calculation in such a form that it can be applied to *any* tracer combination.
 
 ----
@@ -7,11 +9,11 @@ You may also be interested in this version of [`pyHMcode`](https://github.com/ti
 The code in this repository produces the `HMcode` non-linear matter power spectrum using the augmented halo-model approach described in [Mead (2021]( https://arxiv.org/abs/2009.01858). It can also produce `HMcode` results from [Mead et al. (2016)](https://arxiv.org/abs/1602.02154) or from [Mead et al. (2015)](https://arxiv.org/abs/1505.07833). Appendix B of the 2015 paper details the numerical methods used in the calculation. If you use this work, or this code, I would be very grateful if you were to cite the relevant papers. For the enthusiast, the code itself can also be cited: http://ascl.net/1508.001.
 
 Clone the repository using
-```
+```bash
 git clone --recursive https://github.com/alexander-mead/HMcode
 ```
 the `--recursive` is important because that will also ensure that necessary libraries are cloned in to the `library/` subdirectory. `HMcode` can then be compiled using `make`. If you get an error: 
-```
+```bash
 *** No rule to make target `build/precision.o', needed by `bin/HMcode'.
 ```
 this is because you did not use the `--recursive` flag. `HMcode` should compile with any `Fortran` compiler, the default is `gfortran`, but you can change the compiler within the `Makefile` if necessary. To run the compiled code type `./bin/HMcode`.
@@ -21,7 +23,7 @@ Six cosmological parameters can be specified via the command line in the order: 
 In addition, a  `CAMB`-format linear power spectrum (two columns: $k$ and $P(k)$ with units $h\mathrm{Mpc}^{-1}$ and $(h^{-1}\mathrm{Mpc})^3$ respectively, with a single leading *#* comment line) can be provided as a seventh command-line argument. This linear spectrum is taken to be at $z=0$ and its amplitude at higher redshifts is calculated assuming a scale-independet growth factor that is calculated via the cosmological parameters. If a linear spectrum is specified in this way then it is assumed to be normalised correctly and the value of `sig8` provided via the command line will be ignored.
 
 To give a concrete example:
-```
+```bash
 ./bin/HMcode 0.32 0.049 0.67 0.97 0.81 -1.0 input/Planck_linearpower.dat
 ```
 would return the non-linear power for a  cosmology with `Om_m = 0.32`; `Om_b = 0.049`; `h = 0.67`; `ns = 0.97`; `sig8 = 0.81`; `w = -1.0` with a linear spectrum taken from `input/Planck_linearpower.dat`.
