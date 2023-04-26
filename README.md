@@ -2,7 +2,7 @@
 
 ![image](https://user-images.githubusercontent.com/9140961/228377292-de68253b-c06c-40cb-a476-90e480c49cd0.png)
 
-You may also be interested in this version of [`pyHMcode`](https://github.com/tilmantroester/pyhmcode), which provides a python wrapper around the `Fortran` of `HMcode`. Alternatively, the repository [`hmcode`](https://github.com/alexander-mead/HMcode-python) contains a version of `HMcode-2020` written in pure `Python`. Otherwise, [`pyhalomodel`](https://github.com/alexander-mead/pyhalomodel) provides a pure-`Python` implementation of the vanilla halo-model calculation in such a form that it can be applied to *any* tracer combination.
+You may also be interested in this version of [`pyHMcode`](https://github.com/tilmantroester/pyhmcode), which provides a python wrapper around the `Fortran` of `HMcode`. Alternatively, the repository [`HMcode-python`](https://github.com/alexander-mead/HMcode-python) contains a version of `HMcode-2020` written in pure `Python`. Otherwise, [`pyhalomodel`](https://github.com/alexander-mead/pyhalomodel) provides a pure-`Python` implementation of the vanilla halo-model calculation in such a form that it can be applied to *any* tracer combination.
 
 ----
 
